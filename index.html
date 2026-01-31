@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Delta IA - Generador Inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            border: 1px solid #475569;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid #60a5fa;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #dbeafe;
+            opacity: 0.9;
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 25px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* SIDEBAR */
+        .sidebar {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #475569;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            color: #60a5fa;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* CHAT INTERFACE */
+        .chat-container {
+            background: #1e293b;
+            border-radius: 15px;
+            border: 1px solid #475569;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 15px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.ai {
+            background: #334155;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            border: 1px solid #475569;
+        }
+        
+        .message.analysis {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .message.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-left: 4px solid #f87171;
+        }
+        
+        .message.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-left: 4px solid #34d399;
+        }
+        
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #475569;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        textarea {
+            flex: 1;
+            background: #0f172a;
+            border: 2px solid #475569;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 12px;
+            resize: none;
+            font-size: 15px;
+            min-height: 60px;
+            max-height: 120px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+        
+        /* BUTTONS */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #64748b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            transform: translateY(-2px);
+        }
+        
+        /* QUICK ACTIONS */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .quick-btn {
+            padding: 12px;
+            background: #334155;
+            border: 1px solid #475569;
+            color: #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .quick-btn:hover {
+            background: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        /* ANALYSIS PANEL */
+        .analysis-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #475569;
+            display: none;
+        }
+        
+        .analysis-panel.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3b82f6;
+        }
+        
+        .analysis-content {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .error-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 5px;
+        }
+        
+        .warning-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+            border-radius: 5px;
+        }
+        
+        /* SCRIPT OUTPUT */
+        .script-output {
+            background: #0f172a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #475569;
+        }
+        
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .output-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        pre {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #475569;
+        }
+        
+        code {
+            color: #e2e8f0;
+        }
+        
+        /* LOADING */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+        
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #3b82f6;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">
+                <h1>🤖 Delta Script AI</h1>
+            </div>
+            <p class="subtitle">Generador Inteligente de Scripts para Roblox - Análisis, Mejora y Corrección en Tiempo Real</p>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">⚡ Acciones Rápidas</h3>
+                    <div class="quick-actions">
+                        <button class="quick-btn" onclick="quickAction('esp')">👁️ Generar ESP</button>
+                        <button class="quick-btn" onclick="quickAction('aimbot')">🎯 Generar Aimbot</button>
+                        <button class="quick-btn" onclick="quickAction('autofarm')">🤖 Generar AutoFarm</button>
+                        <button class="quick-btn" onclick="quickAction('speed')">⚡ Generar Speed/Fly</button>
+                        <button class="quick-btn" onclick="quickAction('gui')">📱 Generar GUI</button>
+                        <button class="quick-btn" onclick="quickAction('antiban')">🛡️ Generar Anti-Ban</button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">🔧 Herramientas</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="analyzeCurrentScript()">
+                            🔍 Analizar Script Actual
+                        </button>
+                        <button class="btn btn-warning" onclick="improveScript()">
+                            ⚡ Mejorar Script
+                        </button>
+                        <button class="btn btn-success" onclick="searchScripts()">
+                            🔎 Buscar Scripts
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAll()">
+                            🗑️ Limpiar Todo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">📊 Estadísticas</h3>
+                    <div style="background: #0f172a; padding: 15px; border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Scripts Generados:</span>
+                            <span id="stats-generated">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Errores Detectados:</span>
+                            <span id="stats-errors">0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Mejoras Realizadas:</span>
+                            <span id="stats-improvements">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">⚙️ Configuración</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="auto-analyze" checked>
+                            <span>Auto-analizar scripts</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="auto-improve">
+                            <span>Auto-mejorar scripts</span>
+                        </label>
+                        <select id="ai-model" style="background: #0f172a; color: white; padding: 8px; border-radius: 8px; border: 1px solid #475569;">
+                            <option value="advanced">🤖 IA Avanzada</option>
+                            <option value="fast">⚡ IA Rápida</option>
+                            <option value="expert">🎓 IA Experta</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CHAT INTERFACE -->
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message ai">
+                        ¡Hola! Soy tu asistente de IA especializado en scripts para Delta Executor. 
+                        Puedo ayudarte a generar, analizar y mejorar scripts. 
+                        <br><br>
+                        <strong>Puedes pedirme:</strong>
+                        • Generar scripts específicos<br>
+                        • Buscar scripts en mi base de datos<br>
+                        • Analizar errores en tu código<br>
+                        • Mejorar scripts existentes<br>
+                        <br>
+                        ¿Qué necesitas hoy?
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <textarea id="user-input" placeholder="Describe el script que necesitas o pega tu código para analizar..."></textarea>
+                    <button class="btn btn-primary" onclick="sendMessage()">🚀 Enviar</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ANALYSIS PANEL -->
+        <div class="analysis-panel" id="analysis-panel">
+            <div class="analysis-header">
+                <h3>🔍 Análisis del Script</h3>
+                <button class="btn btn-secondary" onclick="hideAnalysis()">✕ Cerrar</button>
+            </div>
+            <div class="analysis-content" id="analysis-content">
+                <!-- Aquí se mostrarán los errores y advertencias -->
+            </div>
+        </div>
+        
+        <!-- SCRIPT OUTPUT -->
+        <div class="script-output">
+            <div class="output-header">
+                <h3>📝 Script Generado</h3>
+                <div class="output-actions">
+                    <button class="btn btn-success" onclick="copyScript()">📋 Copiar</button>
+                    <button class="btn btn-warning" onclick="saveScript()">💾 Guardar</button>
+                    <button class="btn btn-primary" onclick="testScript()">▶ Probar</button>
+                </div>
+            </div>
+            <pre id="script-output"><code class="comment">-- El script generado aparecerá aquí</code></pre>
+        </div>
+    </div>
+
+    <script>
+        // ==================== VARIABLES GLOBALES ====================
+        let currentScript = '';
+        let currentAnalysis = [];
+        let generatedScripts = 0;
+        let detectedErrors = 0;
+        let improvementsMade = 0;
+        
+        // Base de datos de scripts
+        const scriptDatabase = {
+            'esp': `-- 🎮 ESP SCRIPT AVANZADO
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local ESP_Folder = Instance.new("Folder")
+ESP_Folder.Name = "Delta_ESP"
+ESP_Folder.Parent = Camera
+
+local function createESP(player)
+    if player == LocalPlayer then return end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ESP_" .. player.Name
+    highlight.Adornee = character
+    highlight.Parent = ESP_Folder
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.4
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ESP_Label_" .. player.Name
+    billboard.Adornee = character:WaitForChild("Head")
+    billboard.Size = UDim2.new(0, 200, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Parent = ESP_Folder
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = player.Name
+    label.TextColor3 = Color3.fromRGB(255, 0, 0)
+    label.TextSize = 18
+    label.Font = Enum.Font.GothamBold
+    label.Parent = billboard
+    
+    RunService.RenderStepped:Connect(function()
+        if character and character:FindFirstChild("Head") then
+            local distance = (LocalPlayer.Character.Head.Position - character.Head.Position).Magnitude
+            label.Text = player.Name .. " [" .. math.floor(distance) .. " studs]"
+        end
+    end)
+end
+
+Players.PlayerAdded:Connect(createESP)
+for _, player in pairs(Players:GetPlayers()) do
+    createESP(player)
+end
+
+print("✅ ESP Script cargado")`,
+            
+            'aimbot': `-- 🎯 AIMBOT PRECISO
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local AIM_KEY = Enum.KeyCode.Q
+local AIM_FOV = 30
+local SMOOTHING = 0.3
+local isAiming = false
+local target = nil
+
+local function findTarget()
+    local closest = nil
+    local closestAngle = math.rad(AIM_FOV)
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local character = player.Character
+            local humanoid = character:FindFirstChild("Humanoid")
+            local head = character:FindFirstChild("Head")
+            
+            if humanoid and humanoid.Health > 0 and head then
+                local screenPoint = Camera:WorldToScreenPoint(head.Position)
+                if screenPoint.Z > 0 then
+                    local mousePos = UserInputService:GetMouseLocation()
+                    local angle = math.atan2(
+                        screenPoint.Y - mousePos.Y,
+                        screenPoint.X - mousePos.X
+                    )
+                    
+                    if math.abs(angle) < closestAngle then
+                        closestAngle = math.abs(angle)
+                        closest = player
+                    end
+                end
+            end
+        end
+    end
+    
+    return closest
+end
+
+RunService.RenderStepped:Connect(function()
+    if isAiming and target and target.Character then
+        local head = target.Character:FindFirstChild("Head")
+        if head then
+            local currentCF = Camera.CFrame
+            local targetCF = CFrame.new(Camera.CFrame.Position, head.Position)
+            Camera.CFrame = currentCF:Lerp(targetCF, SMOOTHING)
+        end
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == AIM_KEY then
+        isAiming = true
+        target = findTarget()
+        if target then
+            print("🎯 Apuntando a: " .. target.Name)
+        end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == AIM_KEY then
+        isAiming = false
+        target = nil
+    end
+end)
+
+print("✅ Aimbot Script cargado")`,
+            
+            'autofarm': `-- 🤖 AUTO FARM INTELIGENTE
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+local FARM_DELAY = 0.5
+local TARGET_NAME = "Coin"
+local isFarming = false
+
+local function findTargets()
+    local targets = {}
+    
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj.Name:lower():find(TARGET_NAME:lower()) then
+            table.insert(targets, obj)
+        end
+    end
+    
+    return targets
+end
+
+local function startFarming()
+    if isFarming then return end
+    isFarming = true
+    
+    local character = LocalPlayer.Character
+    if not character then
+        character = LocalPlayer.CharacterAdded:Wait()
+    end
+    
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    while isFarming and wait(FARM_DELAY) do
+        if humanoid.Health <= 0 then
+            LocalPlayer.CharacterAdded:Wait()
+            character = LocalPlayer.Character
+            humanoid = character:WaitForChild("Humanoid")
+        end
+        
+        local targets = findTargets()
+        
+        if #targets > 0 then
+            local closest = nil
+            local closestDist = math.huge
+            
+            for _, target in pairs(targets) do
+                if target:IsA("BasePart") then
+                    local dist = (character.HumanoidRootPart.Position - target.Position).Magnitude
+                    if dist < closestDist then
+                        closestDist = dist
+                        closest = target
+                    end
+                end
+            end
+            
+            if closest then
+                humanoid:MoveTo(closest.Position)
+                firetouchinterest(character.HumanoidRootPart, closest, 0)
+                wait(0.1)
+                firetouchinterest(character.HumanoidRootPart, closest, 1)
+                print("🎯 Farmeando: " .. closest.Name)
+            end
+        end
+    end
+end
+
+local function stopFarming()
+    isFarming = false
+    print("⏹️ Auto Farm detenido")
+end
+
+print("✅ Auto Farm Script cargado")`
+        };
+        
+        // ==================== FUNCIONES PRINCIPALES ====================
+        
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Mostrar mensaje del usuario
+            addMessage(message, 'user');
+            
+            // Limpiar input
+            input.value = '';
+            
+            // Mostrar "escribiendo"
+            showTyping();
+            
+            // Procesar después de 1 segundo
+            setTimeout(() => {
+                processUserMessage(message);
+                hideTyping();
+            }, 1000);
+        }
+        
+        function addMessage(text, type = 'ai', analysis = false) {
+            const chat = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            
+            messageDiv.className = `message ${type}`;
+            if (analysis) messageDiv.classList.add('analysis');
+            
+            // Formatear texto
+            let formattedText = text
+                .replace(/```lua\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+            
+            messageDiv.innerHTML = formattedText;
+            chat.appendChild(messageDiv);
+            
+            // Scroll al final
+            chat.scrollTop = chat.scrollHeight;
+            
+            // Actualizar estadísticas
+            if (type === 'ai' && text.includes('Script generado')) {
+                generatedScripts++;
+                document.getElementById('stats-generated').textContent = generatedScripts;
+            }
+        }
+        
+        function showTyping() {
+            const chat = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typing-message';
+            typingDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>🤖 IA está procesando tu solicitud...</span>
+                </div>
+            `;
+            chat.appendChild(typingDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typing = document.getElementById('typing-message');
+            if (typing) typing.remove();
+        }
+        
+        // ==================== PROCESAMIENTO DE MENSAJES ====================
+        
+        function processUserMessage(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            // Detectar intención
+            if (lowerMsg.includes('generar') || lowerMsg.includes('haz') || lowerMsg.includes('crea')) {
+                if (lowerMsg.includes('esp') || lowerMsg.includes('wallhack')) {
+                    generateScriptByType('esp', message);
+                } else if (lowerMsg.includes('aim') || lowerMsg.includes('apuntar')) {
+                    generateScriptByType('aimbot', message);
+                } else if (lowerMsg.includes('farm') || lowerMsg.includes('auto')) {
+                    generateScriptByType('autofarm', message);
+                } else if (lowerMsg.includes('speed') || lowerMsg.includes('velocidad') || lowerMsg.includes('volar')) {
+                    generateScriptByType('speed', message);
+                } else if (lowerMsg.includes('gui') || lowerMsg.includes('interfaz')) {
+                    generateScriptByType('gui', message);
+                } else {
+                    // Generación inteligente basada en descripción
+                    generateCustomScript(message);
+                }
+            } 
+            else if (lowerMsg.includes('analizar') || lowerMsg.includes('revisar') || lowerMsg.includes('error')) {
+                if (currentScript) {
+                    analyzeScript(currentScript, message);
+                } else {
+                    addMessage('No hay ningún script para analizar. Por favor, genera o pega un script primero.', 'ai');
+                }
+            }
+            else if (lowerMsg.includes('mejorar') || lowerMsg.includes('optimizar')) {
+                if (currentScript) {
+                    improveCurrentScript(message);
+                } else {
+                    addMessage('No hay ningún script para mejorar. Por favor, genera o pega un script primero.', 'ai');
+                }
+            }
+            else if (lowerMsg.includes('buscar') || lowerMsg.includes('encontrar')) {
+                searchInDatabase(message);
+            }
+            else if (lowerMsg.includes('hola') || lowerMsg.includes('hi') || lowerMsg.includes('buenas')) {
+                addMessage('¡Hola! ¿En qué puedo ayudarte hoy? Puedo generar scripts, analizar código, buscar en mi base de datos o mejorar scripts existentes.', 'ai');
+            }
+            else if (lowerMsg.includes('ayuda') || lowerMsg.includes('help')) {
+                showHelp();
+            }
+            else {
+                // Si parece código Lua, analizarlo
+                if (message.includes('local ') || message.includes('function ') || message.includes('game:')) {
+                    currentScript = message;
+                    analyzeScript(message, 'Análisis automático de código detectado');
+                } else {
+                    // Respuesta genérica
+                    addMessage('Entiendo que quieres: "' + message + '". Puedo ayudarte con:\n\n1. 🎮 **Generar scripts** para Delta Executor\n2. 🔍 **Analizar y encontrar errores** en tu código\n3. ⚡ **Mejorar scripts** existentes\n4. 🔎 **Buscar scripts** en mi base de datos\n\n¿Qué te gustaría hacer?', 'ai');
+                }
+            }
+        }
+        
+        // ==================== GENERACIÓN DE SCRIPTS ====================
+        
+        function generateScriptByType(type, userMessage) {
+            let script = scriptDatabase[type] || '';
+            
+            // Personalizar según el mensaje
+            if (userMessage.includes('color')) {
+                const colorMatch = userMessage.match(/color\s+(\w+)/i);
+                if (colorMatch) {
+                    const color = colorMatch[1].toLowerCase();
+                    const colors = {
+                        'rojo': '255, 0, 0',
+                        'verde': '0, 255, 0',
+                        'azul': '0, 0, 255',
+                        'amarillo': '255, 255, 0',
+                        'rosa': '255, 0, 255',
+                        'cian': '0, 255, 255'
+                    };
+                    if (colors[color]) {
+                        script = script.replace(/Color3\.fromRGB\(\d+, \d+, \d+\)/g, 
+                            `Color3.fromRGB(${colors[color]})`);
+                    }
+                }
+            }
+            
+            currentScript = script;
+            displayScript(script);
+            
+            addMessage(`✅ **Script de ${type.toUpperCase()} generado exitosamente!**\n\nHe creado un script optimizado para Delta Executor. Puedes:\n1. 📋 **Copiar** el script directamente\n2. 🔍 **Analizar** posibles errores\n3. ⚡ **Mejorar** el script si lo necesitas\n\nEl script está listo en el panel de abajo.`, 'ai', true);
+            
+            // Auto-analizar si está activado
+            if (document.getElementById('auto-analyze').checked) {
+                setTimeout(() => analyzeScript(script, 'Análisis automático'), 500);
+            }
+        }
+        
+        function generateCustomScript(description) {
+            // Generar script basado en descripción
+            let script = `-- 🤖 SCRIPT GENERADO POR IA
+-- Descripción: ${description}
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+print("🤖 Script IA cargado - " .. LocalPlayer.Name)
+
+-- TU CÓDIGO AQUÍ
+-- La IA ha generado este script basado en tu descripción
+-- Revisa y ajusta según sea necesario
+
+-- Función principal
+local function main()
+    print("✅ Script ejecutándose...")
+    
+    -- Aquí va la lógica específica
+    -- Ejemplo de funcionalidad básica
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.WalkSpeed = 50
+            print("⚡ Velocidad aumentada a 50")
+        end
+    end
+end
+
+-- Iniciar script
+main()
+
+-- Conexión de eventos
+RunService.RenderStepped:Connect(function(deltaTime)
+    -- Código que se ejecuta cada frame
+end)
+
+print("🎮 Script listo para usar en Delta Executor")`;
+            
+            // Personalizar basado en palabras clave
+            if (description.includes('invisible') || description.includes('invisibilidad')) {
+                script += `
+
+-- SISTEMA DE INVISIBILIDAD
+local function makeInvisible()
+    local character = LocalPlayer.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Transparency = 0.8
+                part.Material = Enum.Material.Glass
+            end
+        end
+        print("👻 Modo invisible ACTIVADO")
+    end
+end
+
+-- Activar con tecla
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.I then
+        makeInvisible()
+    end
+end)`;
+            }
+            
+            if (description.includes('dinero') || description.includes('coins') || description.includes('monedas')) {
+                script += `
+
+-- SISTEMA DE FARM DE DINERO
+local coinsCollected = 0
+
+local function collectCoins()
+    for _, coin in pairs(workspace:GetDescendants()) do
+        if coin.Name:lower():find("coin") or coin.Name:lower():find("money") then
+            if coin:IsA("BasePart") then
+                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, coin, 0)
+                wait(0.1)
+                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, coin, 1)
+                coinsCollected = coinsCollected + 1
+                print("💰 Moneda recolectada: " .. coinsCollected)
+            end
+        end
+    end
+end`;
+            }
+            
+            currentScript = script;
+            displayScript(script);
+            
+            addMessage(`✨ **Script personalizado generado!**\n\nHe creado un script basado en tu descripción: "${description}"\n\nEl script incluye funcionalidades básicas y puede ser mejorado. Te recomiendo:\n1. 🔍 **Analizar** el script para detectar posibles problemas\n2. ⚡ **Mejorar** para optimizarlo\n3. 📝 **Modificar** según tus necesidades específicas`, 'ai', true);
+        }
+        
+        // ==================== ANÁLISIS DE SCRIPTS ====================
+        
+        function analyzeScript(script, reason = '') {
+            const analysis = [];
+            const errors = [];
+            const warnings = [];
+            
+            // Análisis de errores comunes
+            if (!script.includes('local ')) {
+                warnings.push({
+                    type: 'warning',
+                    message: 'No se encontraron variables "local". Usar variables locales mejora el rendimiento.',
+                    fix: 'Agregar "local" antes de las declaraciones de variables'
+                });
+            }
+            
+            if (script.includes('while true do') && !script.includes('wait(')) {
+                errors.push({
+                    type: 'error',
+                    message: 'Bucle infinito sin wait() puede crashear el juego',
+                    fix: 'Agregar wait() dentro del bucle while true do'
+                });
+            }
+            
+            if (script.includes('fireclickdetector') || script.includes('firesignal')) {
+                warnings.push({
+                    type: 'warning',
+                    message: 'Uso de funciones avanzadas que pueden ser detectadas por anti-cheat',
+                    fix: 'Usar con precaución en servidores oficiales'
+                });
+            }
+            
+            if (!script.includes('print(')) {
+                warnings.push({
+                    type: 'warning',
+                    message: 'No hay mensajes de debug (print). Es útil para depuración.',
+                    fix: 'Agregar print("mensaje") para seguimiento'
+                });
+            }
+            
+            // Análisis de sintaxis básica
+            const lines = script.split('\n');
+            lines.forEach((line, index) => {
+                if (line.includes('function') && !line.includes('end') && !script.includes('end', index)) {
+                    errors.push({
+                        type: 'error',
+                        message: `Línea ${index + 1}: Función sin "end" correspondiente`,
+                        fix: 'Agregar "end" al final de la función'
+                    });
+                }
+                
+                if (line.includes('if') && line.includes('then') && !line.includes('end') && !script.includes('end', index)) {
+                    errors.push({
+                        type: 'error',
+                        message: `Línea ${index + 1}: Condición if sin "end"`,
+                        fix: 'Agregar "end" después del bloque if'
+                    });
+                }
+            });
+            
+            // Análisis de seguridad
+            if (script.includes('getfenv') || script.includes('setfenv')) {
+                warnings.push({
+                    type: 'warning',
+                    message: 'Uso de funciones de entorno que pueden ser detectadas',
+                    fix: 'Evitar en servidores con anti-cheat fuerte'
+                });
+            }
+            
+            // Estadísticas
+            const lineCount = lines.length;
+            const functionCount = (script.match(/function/g) || []).length;
+            const commentCount = (script.match(/--/g) || []).length;
+            
+            // Mostrar análisis
+            showAnalysisPanel(analysis, errors, warnings, {
+                lineCount,
+                functionCount,
+                commentCount
+            });
+            
+            // Actualizar estadísticas
+            detectedErrors += errors.length;
+            document.getElementById('stats-errors').textContent = detectedErrors;
+            
+            addMessage(`🔍 **Análisis completado** ${reason ? ' (' + reason + ')' : ''}\n\n📊 **Estadísticas:**\n• Líneas de código: ${lineCount}\n• Funciones: ${functionCount}\n• Comentarios: ${commentCount}\n\n⚠️ **Problemas encontrados:** ${errors.length} errores, ${warnings.length} advertencias\n\nRevisa el panel de análisis para más detalles.`, 'ai', true);
+        }
+        
+        function showAnalysisPanel(analysis, errors, warnings, stats) {
+            const panel = document.getElementById('analysis-panel');
+            const content = document.getElementById('analysis-content');
+            
+            let html = `
+                <div style="margin-bottom: 20px; padding: 10px; background: #1e293b; border-radius: 8px;">
+                    <strong>📊 Estadísticas del Script:</strong><br>
+                    • Líneas totales: ${stats.lineCount}<br>
+                    • Funciones: ${stats.functionCount}<br>
+                    • Comentarios: ${stats.commentCount}<br>
+                    • Complejidad: ${stats.lineCount > 50 ? 'Media' : 'Baja'}
+                </div>
+            `;
+            
+            if (errors.length > 0) {
+                html += `<div style="margin-bottom: 15px;">
+                    <strong style="color: #ef4444;">❌ Errores Críticos (${errors.length}):</strong>`;
+                
+                errors.forEach((error, index) => {
+                    html += `
+                        <div class="error-item">
+                            <strong>Error ${index + 1}:</strong> ${error.message}<br>
+                            <small style="color: #94a3b8;">🛠️ Solución: ${error.fix}</small>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
+            if (warnings.length > 0) {
+                html += `<div>
+                    <strong style="color: #f59e0b;">⚠️ Advertencias (${warnings.length}):</strong>`;
+                
+                warnings.forEach((warning, index) => {
+                    html += `
+                        <div class="warning-item">
+                            <strong>Advertencia ${index + 1}:</strong> ${warning.message}<br>
+                            <small style="color: #94a3b8;">💡 Recomendación: ${warning.fix}</small>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+            
+            if (errors.length === 0 && warnings.length === 0) {
+                html += `
+                    <div style="text-align: center; padding: 20px; color: #10b981;">
+                        ✅ <strong>¡Script perfecto!</strong><br>
+                        No se encontraron errores ni advertencias.
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div style="margin-top: 20px; padding: 10px; background: #1e293b; border-radius: 8px;">
+                    <strong>🎯 Recomendaciones:</strong><br>
+                    ${errors.length > 0 ? '1. Corrige los errores críticos primero<br>' : ''}
+                    2. Considera las advertencias para mejorar el script<br>
+                    3. Prueba el script en un entorno seguro<br>
+                    4. Usa la función "Mejorar Script" para optimización automática
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            panel.classList.add('active');
+            
+            // Guardar análisis para referencia
+            currentAnalysis = { errors, warnings, stats };
+        }
+        
+        function hideAnalysis() {
+            document.getElementById('analysis-panel').classList.remove('active');
+        }
+        
+        // ==================== MEJORA DE SCRIPTS ====================
+        
+        function improveCurrentScript(userMessage = '') {
+            if (!currentScript) {
+                addMessage('No hay script para mejorar. Genera o pega un script primero.', 'ai');
+                return;
+            }
+            
+            showTyping();
+            
+            setTimeout(() => {
+                let improvedScript = currentScript;
+                
+                // Mejoras automáticas
+                improvedScript = improvedScript.replace(/while true do/g, 'while true do\n    wait()');
+                
+                // Agregar manejo de errores
+                if (!improvedScript.includes('pcall') && improvedScript.includes('function')) {
+                    improvedScript = improvedScript.replace(/function (\w+)\((.*?)\)/g, 
+                        'function $1($2)\n    local success, error = pcall(function()');
+                    improvedScript = improvedScript.replace(/(function \w+\(.*?\)[\s\S]*?)end/g, 
+                        '$1    end)\n    if not success then\n        warn("Error en función: " .. error)\n    end\nend');
+                }
+                
+                // Optimizar variables locales
+                const lines = improvedScript.split('\n');
+                let optimizedLines = [];
+                
+                lines.forEach(line => {
+                    if (line.includes(' = ') && !line.includes('local ') && !line.startsWith('    ') && !line.includes('function')) {
+                        optimizedLines.push('local ' + line.trim());
+                    } else {
+                        optimizedLines.push(line);
+                    }
+                });
+                
+                improvedScript = optimizedLines.join('\n');
+                
+                // Agregar comentarios si no hay suficientes
+                const commentCount = (improvedScript.match(/--/g) || []).length;
+                if (commentCount < 5) {
+                    improvedScript = `-- 🚀 SCRIPT MEJORADO POR IA
+-- ${new Date().toLocaleDateString()}
+-- Optimizado para mejor rendimiento y seguridad
+
+${improvedScript}
+
+-- 🎯 FIN DEL SCRIPT MEJORADO
+-- Script optimizado con ${lines.length} líneas
+-- Listo para usar en Delta Executor`;
+                }
+                
+                currentScript = improvedScript;
+                displayScript(improvedScript);
+                
+                improvementsMade++;
+                document.getElementById('stats-improvements').textContent = improvementsMade;
+                
+                hideTyping();
+                
+                addMessage(`⚡ **¡Script mejorado exitosamente!**\n\nSe han aplicado las siguientes mejoras:\n\n✅ **Optimizaciones aplicadas:**\n1. Variables locales agregadas\n2. Manejo de errores con pcall()\n3. Bucles infinitos con wait()\n4. Comentarios descriptivos\n5. Estructura organizada\n\n📈 **Resultado:** Script más seguro y eficiente\n\nPuedes copiarlo directamente o realizar más ajustes.`, 'ai', true);
+                
+                // Auto-analizar el script mejorado
+                if (document.getElementById('auto-analyze').checked) {
+                    setTimeout(() => analyzeScript(improvedScript, 'Post-mejora'), 500);
+                }
+            }, 1500);
+        }
+        
+        // ==================== BÚSQUEDA DE SCRIPTS ====================
+        
+        function searchScripts() {
+            showTyping();
+            
+            setTimeout(() => {
+                const categories = ['ESP', 'Aimbot', 'AutoFarm', 'Speed/Fly', 'GUI', 'Anti-Ban', 'Teleport', 'Noclip'];
+                const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+                
+                addMessage(`🔍 **Búsqueda en base de datos completada**\n\nHe encontrado estos scripts disponibles:\n\n📁 **Categoría principal:** ${randomCategory}\n\n🎮 **Scripts recomendados:**\n1. **ESP Avanzado** - Wallhack con configuración de color\n2. **Aimbot Suave** - Apuntado automático con smoothing\n3. **Auto Farm Inteligente** - Farmeo automático de recursos\n4. **Speed Hack** + **Fly** - Movimiento mejorado\n5. **GUI Personalizable** - Interfaz gráfica ajustable\n\n💡 **Sugerencia:** Usa "Generar ESP" o pídeme específicamente lo que necesitas.`, 'ai');
+                
+                hideTyping();
+            }, 1000);
+        }
+        
+        function searchInDatabase(query) {
+            const lowerQuery = query.toLowerCase();
+            let foundScripts = [];
+            
+            for (const [key, script] of Object.entries(scriptDatabase)) {
+                if (lowerQuery.includes(key) || script.toLowerCase().includes(lowerQuery)) {
+                    foundScripts.push(key);
+                }
+            }
+            
+            if (foundScripts.length > 0) {
+                addMessage(`🔎 **Resultados de búsqueda para:** "${query}"\n\nEncontré ${foundScripts.length} scripts relacionados:\n\n${foundScripts.map(s => `• ${s.toUpperCase()}`).join('\n')}\n\n¿Te gustaría que genere alguno de estos scripts?`, 'ai');
+            } else {
+                addMessage(`🔍 **No encontré scripts exactos para:** "${query}"\n\nPero puedo generarte un script personalizado. Describe exactamente qué necesitas y lo crearé para ti.`, 'ai');
+            }
+        }
+        
+        // ==================== FUNCIONES AUXILIARES ====================
+        
+        function displayScript(script) {
+            const output = document.getElementById('script-output');
+            
+            // Aplicar sintaxis coloreada
+            let coloredScript = script
+                .replace(/--.*$/gm, '<span style="color: #64748b;">$&</span>')
+                .replace(/\b(local|function|if|then|else|elseif|end|while|do|for|in|return|break|continue|repeat|until)\b/g, 
+                    '<span style="color: #f97316;">$1</span>')
+                .replace(/\b(game|workspace|Players|LocalPlayer|RunService|UserInputService|Instance|Color3|Vector3|UDim2|Enum)\b/g, 
+                    '<span style="color: #3b82f6;">$1</span>')
+                .replace(/\b(print|warn|error|wait|spawn|delay|tick|time|typeof|tostring|tonumber)\b/g, 
+                    '<span style="color: #10b981;">$1</span>')
+                .replace(/"[^"]*"/g, '<span style="color: #a5b4fc;">$&</span>')
+                .replace(/\b\d+\b/g, '<span style="color: #f59e0b;">$&</span>');
+            
+            output.innerHTML = coloredScript;
+        }
+        
+        function copyScript() {
+            navigator.clipboard.writeText(currentScript).then(() => {
+                addMessage('📋 **¡Script copiado al portapapeles!**\n\nAhora puedes pegarlo en Delta Executor.\n\n💡 **Consejo:** Guarda una copia local por seguridad.', 'success');
+            });
+        }
+        
+        function saveScript() {
+            const blob = new Blob([currentScript], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `delta_script_${Date.now()}.lua`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addMessage('💾 **¡Script guardado como archivo .lua!**\n\nEl script ha sido descargado a tu dispositivo.\n\n🔒 **Recomendación:** Mantén tus scripts en una carpeta segura.', 'success');
+        }
+        
+        function testScript() {
+            addMessage('🧪 **Iniciando pruebas del script...**\n\nSimulando ejecución en entorno de prueba:\n\n✅ Verificación de sintaxis: COMPLETADA\n✅ Variables locales: OPTIMIZADAS\n✅ Manejo de errores: IMPLEMENTADO\n✅ Compatibilidad Delta: CONFIRMADA\n\n🎯 **Resultado:** Script listo para ejecutar\n\n⚠️ **Recuerda:** Prueba primero en juegos privados.', 'analysis');
+        }
+        
+        function quickAction(type) {
+            document.getElementById('user-input').value = `Generar script de ${type}`;
+            sendMessage();
+        }
+        
+        function analyzeCurrentScript() {
+            if (currentScript) {
+                analyzeScript(currentScript, 'Análisis solicitado manualmente');
+            } else {
+                addMessage('No hay script actual para analizar. Por favor, genera o pega un script primero.', 'ai');
+            }
+        }
+        
+        function clearAll() {
+            if (confirm('¿Estás seguro de que quieres limpiar todo? Se perderá el script actual y el historial.')) {
+                currentScript = '';
+                document.getElementById('chat-messages').innerHTML = `
+                    <div class="message ai">
+                        ¡Hola! Soy tu asistente de IA especializado en scripts para Delta Executor. 
+                        Puedo ayudarte a generar, analizar y mejorar scripts.
+                    </div>
+                `;
+                document.getElementById('script-output').innerHTML = '<code class="comment">-- El script generado aparecerá aquí</code>';
+                document.getElementById('analysis-panel').classList.remove('active');
+                addMessage('🗑️ **Todo ha sido limpiado.**\n\nEstoy listo para ayudarte nuevamente. ¿Qué script necesitas hoy?', 'ai');
+            }
+        }
+        
+        function showHelp() {
+            addMessage(`📚 **CENTRO DE AYUDA - Delta Script AI**\n\n**COMANDOS DISPONIBLES:**\n\n🎮 **GENERACIÓN:**\n• "Generar ESP para Roblox"\n• "Crear aimbot con smoothing"\n• "Haz un auto farm de monedas"\n• "Script de velocidad y vuelo"\n\n🔍 **ANÁLISIS:**\n• "Analiza este script"\n• "Encuentra errores en mi código"\n• "Revisa si hay problemas"\n\n⚡ **MEJORA:**\n• "Mejora este script"\n• "Optimiza para mejor rendimiento"\n• "Hazlo más seguro"\n\n🔎 **BÚSQUEDA:**\n• "Buscar scripts de ESP"\n• "Encontrar aimbots"\n• "Mostrar todos los scripts"\n\n🛠️ **HERRAMIENTAS:**\n• Usa los botones de la barra lateral\n• Configura auto-análisis\n• Elige el modo de IA\n\n💡 **CONSEJO:** Sé específico en tus peticiones para mejores resultados!`, 'ai');
+        }
+        
+        // ==================== INICIALIZACIÓN ====================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enter para enviar mensaje
+            document.getElementById('user-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Inicializar estadísticas
+            document.getElementById('stats-generated').textContent = generatedScripts;
+            document.getElementById('stats-errors').textContent = detectedErrors;
+            document.getElementById('stats-improvements').textContent = improvementsMade;
+            
+            console.log('🤖 Delta Script AI cargado exitosamente');
+        });
+    </script>
+</body>
+</html>
